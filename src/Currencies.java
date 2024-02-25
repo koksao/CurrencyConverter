@@ -1,22 +1,20 @@
 import java.util.*;
+
 public class Currencies {
-    Map<String, Map<String,Double>> rates;
-    Currencies(){
-        rates= new HashMap<>();
-    }
-    public void addCurrency (String currency){
-        rates.put(currency,new HashMap<>());
-    }
-    public void addRates(String x, String y, Double i){
-        rates.get(x).put(y,i);
-        rates.get(y).put(x,(1 / i));
+    private Map<String, Map<String, Double>> rates = new HashMap<>();
+
+    public void addCurrency(String currency) {
+        rates.put(currency, new HashMap<>());
     }
 
-    public String convert (Integer amountx, String x, String y){
-        double rate = rates.get(x).get(y);
-        double result = rate * amountx;
-        String round = String.format("%.2f", result);
+    public void addRates(String from, String to, Double rate) {
+        rates.get(from).put(to, rate);
+        rates.get(to).put(from, (1 / rate));
+    }
 
-        return round;
+    public double convert(Integer amount, String from, String to) {
+        double rate = rates.get(from).get(to);
+        double result = rate * amount;
+        return result;
     }
 }
