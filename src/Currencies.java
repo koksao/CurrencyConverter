@@ -18,7 +18,6 @@ public class Currencies {
             throw new IllegalArgumentException("Currency not found");
         }
         double rate = rates.get(from).get(to);
-        double result = rate * amount;
-        return result;
+        return rate * amount;
     }
 }
