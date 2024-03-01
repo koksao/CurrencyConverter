@@ -1,3 +1,11 @@
+package koksao;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+
+import javax.swing.text.html.Option;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,7 +15,25 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
+
+
     public static void main(String[] args) {
+        Options options = new Options();
+        options.addOption("r", "rates", true, "path to a file");
+
+        CommandLineParser clp = new DefaultParser();
+        try {
+            CommandLine cl = clp.parse(options, args);
+            if (cl.hasOption("r")) {
+                String filePath = cl.getOptionValue("r");
+                args[0] = filePath;
+            } else {
+                System.out.println("Cannot find a file");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Scanner scanner = new Scanner(System.in);
         String answer = "";
         String firstCurrency;

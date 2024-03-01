@@ -1,4 +1,7 @@
-import java.util.*;
+package koksao;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Currencies {
     private Map<String, Map<String, Double>> rates = new HashMap<>();
