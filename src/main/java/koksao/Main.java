@@ -1,9 +1,7 @@
 package koksao;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
+import com.opencsv.exceptions.CsvValidationException;
+import org.apache.commons.cli.*;
 
 import javax.swing.text.html.Option;
 import java.io.BufferedReader;
@@ -15,24 +13,16 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CsvValidationException, IOException, ParseException {
         Options options = new Options();
-        options.addOption("r", "rates", true, "path to a file");
+        options.addRequiredOption("r", "rates", true, "path to a file");
+        String filePath = "";
 
         CommandLineParser clp = new DefaultParser();
-        try {
-            CommandLine cl = clp.parse(options, args);
-            if (cl.hasOption("r")) {
-                String filePath = cl.getOptionValue("r");
-                args[0] = filePath;
-            } else {
-                System.out.println("Cannot find a file");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        CommandLine cl = clp.parse(options, args);
+        filePath = cl.getOptionValue("r");
+
+        Currencies currencies = new Currencies(filePath);
 
         Scanner scanner = new Scanner(System.in);
         String answer = "";
@@ -45,30 +35,10 @@ public class Main {
             System.out.println("On which?");
             secondCurrency = scanner.next();
             System.out.println("What amount of money?");
-            int amount = scanner.nextInt();
+            double amount = scanner.nextDouble();
+            System.out.println(String.format("%.2f", currencies.convert(amount, firstCurrency, secondCurrency)));
 
-            String line;
-            String csvSplitBy = ",";
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(args[0]));
-                while ((line = br.readLine()) != null) {
-                    String[] data = line.split(csvSplitBy);
-                    if (data[0].equals(firstCurrency) && data[1].equals(secondCurrency)) {
-                        double rate = Double.parseDouble(data[2]);
-                        System.out.println(String.format("%.2f", rate * amount));
-                    }
-                    if (data[1].equals(firstCurrency) && data[0].equals(secondCurrency)) {
-                        double rate = Double.parseDouble(data[2]);
-                        System.out.println(String.format("%.2f", (1 / rate) * amount));
-
-                    }
-                }
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println("If you want to end program type Exit, if not type No");
+            System.out.println("If you want to end program type Exit, if not type anything");
             answer = scanner.next();
             if (answer.equals("Exit")) {
                 System.exit(0);
@@ -76,16 +46,6 @@ public class Main {
                 System.out.println();
             }
         }
-
-
-        Currencies currencies = new Currencies();
-
-        currencies.addCurrency("PLN", "CAD", 0.3376);
-        currencies.addCurrency("PLN", "CHF", 0.2204);
-        currencies.addCurrency("PLN", "EUR", 0.2313);
-        currencies.addCurrency("PLN", "DKK", 1.7241);
-
-        System.out.println(String.format("%.2f", currencies.convert(50, "EUR", "PLN")));
 
 
     }
