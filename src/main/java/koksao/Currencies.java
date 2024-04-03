@@ -13,7 +13,7 @@ import java.util.Map;
 public class Currencies {
     private Map<String, Map<String, Double>> rates = new HashMap<>();
 
-    public Currencies(String filePath) throws IOException, CsvValidationException {
+    public void currenciesFromFile(String filePath) throws IOException, CsvValidationException {
         if (filePath != "") {
             CSVReader reader = new CSVReader(new FileReader(filePath));
             String[] nextline = reader.readNext();
