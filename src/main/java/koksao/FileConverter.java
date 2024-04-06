@@ -3,17 +3,15 @@ package koksao;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Currencies {
+public class FileConverter implements Converter {
     private Map<String, Map<String, Double>> rates = new HashMap<>();
 
-    public Currencies(String filePath) throws IOException, CsvValidationException {
+    public FileConverter(String filePath) throws IOException, CsvValidationException {
         if (filePath != "") {
             CSVReader reader = new CSVReader(new FileReader(filePath));
             String[] nextline = reader.readNext();
