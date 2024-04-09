@@ -16,7 +16,14 @@ public class FileConverter implements Converter {
             CSVReader reader = new CSVReader(new FileReader(filePath));
             String[] nextline = reader.readNext();
             while ((nextline = reader.readNext()) != null) {
-                addCurrency(nextline[0], nextline[1], Double.parseDouble(nextline[2]));
+                String fromCurrency = nextline[0];
+                String toCurrency = nextline[1];
+                try {
+                    addCurrency(fromCurrency, toCurrency, Double.parseDouble(nextline[2]));
+                }
+                catch (NumberFormatException e){
+                    System.out.println("Rate from " + fromCurrency + " to " + toCurrency + " is probably invalid. Will not load this rate");
+                }
             }
         } else {
             throw new IllegalArgumentException("Empty file path provided");
