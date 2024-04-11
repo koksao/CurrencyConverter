@@ -51,11 +51,10 @@ public class FileConverter implements Converter {
     }
 
     public double convert(Double amount, String from, String to) {
-        if (amount == 0) {
-            throw new IllegalArgumentException("The given amount of money equals 0");
-        }
         if (!rates.containsKey(from) || !rates.get(from).containsKey(to)) {
             throw new IllegalArgumentException("Currency not found");
+        } else if (rates.get(from).get(to) <= 0) {
+            throw new IllegalArgumentException("Rate equals 0 or less");
         }
         double rate = rates.get(from).get(to);
         return rate * amount;

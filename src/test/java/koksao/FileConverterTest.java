@@ -34,11 +34,11 @@ class FileConverterTest {
     }
 
     @Test
-    void amountEquals0() throws CsvValidationException, IOException {
-        FileConverter converter = new FileConverter(changedOrderCsvPath);
+    void rateEquals0orLess() throws CsvValidationException, IOException {
+        FileConverter converter = new FileConverter(currencyRatesTestCsvPath);
         IllegalArgumentException expectedException =
-                assertThrows(IllegalArgumentException.class, () -> converter.convert(0., "PLN", "CAD"));
-        assertEquals("The given amount of money equals 0", expectedException.getMessage());
+                assertThrows(IllegalArgumentException.class, () -> converter.convert(50., "PLN", "DKK"));
+        assertEquals("Rate equals 0 or less", expectedException.getMessage());
     }
 
     @Test
