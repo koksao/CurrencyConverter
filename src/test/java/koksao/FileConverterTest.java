@@ -14,7 +14,7 @@ class FileConverterTest {
     private String currencyRatesTestCsvPath = "src/test/resources/currency-rates-test.csv";
 
     @Test
-    void validRateConversion() throws CsvValidationException, IOException {
+    void validRateConversion() throws CsvValidationException, IOException, CurrencyNotFoundException {
         FileConverter converter = new FileConverter(currencyRatesTestCsvPath);
         assertEquals(6.752, converter.convert(20., "PLN", "CAD"), 0.0001);
     }
@@ -22,13 +22,12 @@ class FileConverterTest {
     @Test
     void invalidRateConversion() throws CsvValidationException, IOException {
         FileConverter converter = new FileConverter(currencyRatesTestCsvPath);
-        IllegalArgumentException expectedException =
-                assertThrows(IllegalArgumentException.class, () -> converter.convert(20., "PLN", "EUR"));
-        assertEquals("Currency not found", expectedException.getMessage());
+        assertThrows(CurrencyNotFoundException.class, () -> converter.convert(20., "PLN", "EUR"));
+
     }
 
     @Test
-    void validRateConversionChangedOrder() throws CsvValidationException, IOException {
+    void validRateConversionChangedOrder() throws CsvValidationException, CurrencyNotFoundException, IOException {
         FileConverter converter = new FileConverter(changedOrderCsvPath);
         assertEquals(6.752, converter.convert(20., "PLN", "CAD"), 0.0001);
     }
@@ -36,13 +35,11 @@ class FileConverterTest {
     @Test
     void rateEquals0orLess() throws CsvValidationException, IOException {
         FileConverter converter = new FileConverter(currencyRatesTestCsvPath);
-        IllegalArgumentException expectedException =
-                assertThrows(IllegalArgumentException.class, () -> converter.convert(50., "PLN", "DKK"));
-        assertEquals("Rate equals 0 or less", expectedException.getMessage());
+        assertThrows(CurrencyNotFoundException.class, () -> converter.convert(50., "PLN", "DKK"));
     }
 
     @Test
-    void invertedCurrenciesConversion() throws CsvValidationException, IOException {
+    void invertedCurrenciesConversion() throws CsvValidationException, IOException, CurrencyNotFoundException {
         FileConverter converter = new FileConverter(changedOrderCsvPath);
         assertEquals(59.24, converter.convert(20., "CAD", "PLN"), 0.01);
         assertEquals(90.74, converter.convert(20., "CHF", "PLN"), 0.01);

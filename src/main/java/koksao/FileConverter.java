@@ -29,7 +29,11 @@ public class FileConverter implements Converter {
                 String fromCurrency = nextline[fromCurrencyPosition];
                 String toCurrency = nextline[toCurrencyPosition];
                 try {
-                    addCurrency(fromCurrency, toCurrency, Double.parseDouble(nextline[ratePosition]));
+                    if (Double.parseDouble(nextline[ratePosition]) > 0) {
+                        addCurrency(fromCurrency, toCurrency, Double.parseDouble(nextline[ratePosition]));
+                    } else {
+                        System.out.println("Rate from " + fromCurrency + " to " + toCurrency + " equals 0 or less. Will not load this rate");
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println("Rate from " + fromCurrency + " to " + toCurrency + " is probably invalid. Will not load this rate");
                 }
@@ -50,11 +54,9 @@ public class FileConverter implements Converter {
         rates.get(to).put(from, (1 / rate));
     }
 
-    public double convert(Double amount, String from, String to) {
+    public double convert(Double amount, String from, String to) throws CurrencyNotFoundException {
         if (!rates.containsKey(from) || !rates.get(from).containsKey(to)) {
-            throw new IllegalArgumentException("Currency not found");
-        } else if (rates.get(from).get(to) <= 0) {
-            throw new IllegalArgumentException("Rate equals 0 or less");
+            throw new CurrencyNotFoundException();
         }
         double rate = rates.get(from).get(to);
         return rate * amount;
