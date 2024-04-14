@@ -5,6 +5,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,9 +15,28 @@ public class FileConverter implements Converter {
     public FileConverter(String filePath) throws IOException, CsvValidationException {
         if (filePath != "") {
             CSVReader reader = new CSVReader(new FileReader(filePath));
-            String[] nextline = reader.readNext();
+            String[] nextline;
+            String[] allColumnHeaders;
+            int ratePosition;
+            int fromCurrencyPosition;
+            int toCurrencyPosition;
+
+            allColumnHeaders = reader.readNext();
+            ratePosition = getPositionUsingHeaders(allColumnHeaders, "rate");
+            fromCurrencyPosition = getPositionUsingHeaders(allColumnHeaders, "from");
+            toCurrencyPosition = getPositionUsingHeaders(allColumnHeaders, "to");
             while ((nextline = reader.readNext()) != null) {
-                addCurrency(nextline[0], nextline[1], Double.parseDouble(nextline[2]));
+                String fromCurrency = nextline[fromCurrencyPosition];
+                String toCurrency = nextline[toCurrencyPosition];
+                try {
+                    if (Double.parseDouble(nextline[ratePosition]) > 0) {
+                        addCurrency(fromCurrency, toCurrency, Double.parseDouble(nextline[ratePosition]));
+                    } else {
+                        System.out.println("Rate from " + fromCurrency + " to " + toCurrency + " equals 0 or less. Will not load this rate");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Rate from " + fromCurrency + " to " + toCurrency + " is probably invalid. Will not load this rate");
+                }
             }
         } else {
             throw new IllegalArgumentException("Empty file path provided");
@@ -34,11 +54,15 @@ public class FileConverter implements Converter {
         rates.get(to).put(from, (1 / rate));
     }
 
-    public double convert(Double amount, String from, String to) {
+    public double convert(Double amount, String from, String to) throws CurrencyNotFoundException {
         if (!rates.containsKey(from) || !rates.get(from).containsKey(to)) {
-            throw new IllegalArgumentException("Currency not found");
+            throw new CurrencyNotFoundException();
         }
         double rate = rates.get(from).get(to);
         return rate * amount;
+    }
+
+    private int getPositionUsingHeaders(String[] allColumnHeaders, String headerName) {
+        return Arrays.asList(allColumnHeaders).indexOf(headerName);
     }
 }

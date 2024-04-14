@@ -2,11 +2,12 @@ package koksao;
 
 import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.cli.*;
+
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws CsvValidationException, IOException, ParseException {
+    public static void main(String[] args) throws CsvValidationException, IOException, ParseException, CurrencyNotFoundException {
         Options options = new Options();
         options.addOption("r", "rates", true, "path to a file");
         options.addOption("t", "token", true, "api token");
